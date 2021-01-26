@@ -7,13 +7,14 @@
 
        
        <div :style="{width:pdf_div_width,margin:'0 auto'}" >
-           <canvas v-for="page in pdf_pages" :id="'the-canvas'+page" :key="page"></canvas>
+           <canvas v-for="page in pdf_pages" :id="'the_canvas'+page" :key="page"></canvas>
        </div>
   </div>
 </template>
 
 <script>
 let PDFJS = require('pdfjs-dist');
+PDFJS.GlobalWorkerOptions.workerSrc = require("pdfjs-dist/build/pdf.worker.entry.js");
 export default {
   data(){
   	 return{
@@ -51,16 +52,17 @@ export default {
      get_pdfurl(){  //获得pdf教案
      	   //加载本地
          this.pdf_src = 'https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf'
+        // this.pdf_src = 'http://kaoshiftp.book118.com//%E5%B0%8F%E5%AD%A6%E5%88%9D%E4%B8%AD/%E5%88%9D%E4%B8%AD%E6%95%B0%E5%AD%A6/%E6%B5%B7%E6%B7%80%E8%A7%A3%E9%A2%98%E9%A2%98%E5%85%B8-%E5%88%9D%E4%B8%AD%E6%95%B0%E5%AD%A6.pdf'
          this._loadFile(this.pdf_src)
      	   return
 
 
      	   //线上请求
-         this.$axios.get('')
-         .then((res)=>{
-         	this.pdf_src = res.url
-         	this._loadFile(this.pdf_src)
-         })
+        //  this.$axios.get('')
+        //  .then((res)=>{
+        //  	this.pdf_src = res.url
+        //  	this._loadFile(this.pdf_src)
+        //  })
      },
      _loadFile (url) {  //初始化pdf
         let loadingTask = PDFJS.getDocument(url)
@@ -68,6 +70,7 @@ export default {
         .then((pdf) => {
           this.pdfDoc = pdf
           this.pdf_pages = this.pdfDoc.numPages
+          //debugger
           this.$nextTick(() => {
             this._renderPage(1)
           })
@@ -77,7 +80,7 @@ export default {
           const that = this
           this.pdfDoc.getPage(num)
           .then((page) => {
-            let canvas = document.getElementById('the-canvas' + num)
+            let canvas = document.getElementById('the_canvas' + num)
             let ctx = canvas.getContext('2d')
             let dpr = window.devicePixelRatio || 1
             let bsr = ctx.webkitBackingStorePixelRatio ||
